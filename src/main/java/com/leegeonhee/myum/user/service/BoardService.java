@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,10 +24,18 @@ public class BoardService {
         Sort sort = Sort.by(Sort.Order.by("id")).reverse();
         return boardRepository.findAll(sort);}
 
+    public Optional<Board> getBoardById(Long id){return boardRepository.findById(id);}
 
     public void allBoardDelete(){boardRepository.deleteAll();}
 
     public void likeUp(Long id){
-        boardRepository.findById(id);
+        Board board = boardRepository.findById(id).orElseThrow(() -> new NullPointerException("no id board "));
+        board.setLikes(board.getLikes() + 1);
+        boardRepository.save(board);
+    }
+    public void likeDown(Long id){
+        Board board = boardRepository.findById(id).orElseThrow(() -> new NullPointerException("no id board "));
+        board.setLikes(board.getLikes() - 1);
+        boardRepository.save(board);
     }
 }
